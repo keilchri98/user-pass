@@ -1,62 +1,52 @@
-// Initial Game State
-let turns = 20; // Start with 20 turns
-let networth = 0;
-let troops = 0;
+// Initial game state
+let turns = 20;
 let cash = 0;
-let premium = false; // Simulate premium subscription (40 turns every 10 minutes)
+let troops = 0;
+let networth = 0;
 
-// Elements
-const turnsElem = document.getElementById('turns');
-const networthElem = document.getElementById('networth');
-const troopsElem = document.getElementById('troops');
-const cashElem = document.getElementById('cash');
-const recruitButton = document.getElementById('recruit');
-const exploitButton = document.getElementById('exploit');
-
-// Turn Generation Timer (every 10 minutes)
-function regenerateTurns() {
-    setInterval(() => {
-        if (premium) {
-            turns = 40; // Premium gets 40 turns every 10 minutes
-        } else {
-            turns = 20; // Regular players get 20 turns
-        }
-        turnsElem.textContent = `Turns: ${turns}`;
-    }, 600000); // 600,000 ms = 10 minutes
+// Update UI function
+function updateUI() {
+    document.getElementById("turns").textContent = "Turns: " + turns;
+    document.getElementById("cash").textContent = "Cash: $" + cash;
+    document.getElementById("troops").textContent = "Troops: " + troops;
+    document.getElementById("networth").textContent = "Networth: $" + networth;
 }
 
-// Actions - Recruiting Troops
-recruitButton.addEventListener('click', () => {
+// Recruit function (15 turns)
+document.getElementById("recruit").addEventListener("click", function() {
     if (turns >= 15) {
-        turns -= 15;
-        troops += 5000; // Player gains 5000 troops
-        networth += 5000; // Increase networth by 5000 for recruiting
-        updateStats();
+        turns -= 15;  // Deduct turns for recruiting
+        let newTroops = Math.floor(Math.random() * 5000) + 1; // Random number of troops between 1 and 5000
+        troops += newTroops;  // Add new troops
+        networth += newTroops * 10;  // Networth increases based on troops recruited
+        updateUI();
     } else {
-        alert('Not enough turns to recruit troops!');
+        alert("Not enough turns to recruit troops!");
     }
 });
 
-// Actions - Exploit for Cash
-exploitButton.addEventListener('click', () => {
+// Exploit function (25 turns)
+document.getElementById("exploit").addEventListener("click", function() {
     if (turns >= 25) {
-        turns -= 25;
-        cash += 5000000000; // Player earns 5 billion cash
-        networth += 5000000000; // Increase networth by 5 billion for cash
-        updateStats();
+        turns -= 25;  // Deduct turns for exploiting
+        let newCash = Math.floor(Math.random() * 5000000000) + 1000000; // Random cash between 1 million and 5 billion
+        cash += newCash;  // Add new cash
+        networth += newCash / 1000;  // Networth increases based on cash exploited
+        updateUI();
     } else {
-        alert('Not enough turns to exploit for cash!');
+        alert("Not enough turns to exploit for cash!");
     }
 });
 
-// Update Stats on screen
-function updateStats() {
-    turnsElem.textContent = `Turns: ${turns}`;
-    networthElem.textContent = `Networth: $${networth.toLocaleString()}`;
-    troopsElem.textContent = `Troops: ${troops}`;
-    cashElem.textContent = `Cash: $${cash.toLocaleString()}`;
+// Function to regenerate turns every 10 minutes (600,000 ms)
+function regenerateTurns() {
+    turns += 20;  // Regenerate 20 turns
+    if (turns > 100) turns = 100;  // Cap turns at 100
+    updateUI();
 }
 
-// Start the game and turn timer
-regenerateTurns();
-updateStats();
+// Call regenerateTurns every 10 minutes (600,000 ms)
+setInterval(regenerateTurns, 600000);  // 10 minutes in milliseconds
+
+// Initial UI update
+updateUI();
