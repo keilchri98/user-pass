@@ -1,190 +1,165 @@
-# paragon 
+# paragon
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Combat Grounds - Basic Version</title>
+    <title>Combat Grounds</title>
     <link rel="stylesheet" href="styles.css">
 </head>
 <body>
     <header>
         <h1>Combat Grounds</h1>
         <div id="player-stats">
-            <p id="player-name">Player: John Doe</p>
-            <p id="player-health">Health: 100</p>
-            <p id="player-level">Level: 1</p>
+            <p id="turns">Turns: 20</p>
+            <p id="networth">Networth: $0</p>
         </div>
     </header>
-    
-    <main>
-        <div id="combat-actions">
-            <button id="attack">Attack</button>
-            <button id="defend">Defend</button>
-            <button id="special">Special Attack</button>
-        </div>
-        
-        <div id="combat-log">
-            <p id="log-output">Welcome to Combat Grounds!</p>
-        </div>
-        
-        <div id="enemy">
-            <h2>Enemy</h2>
-            <p id="enemy-health">Health: 100</p>
-            <p id="enemy-level">Level: 1</p>
-        </div>
-    </main>
 
-    <footer>
-        <p>Combat Grounds - Game by [Your Name]</p>
-    </footer>
+    <main>
+        <div id="battlefield">
+            <h2>Battlefield Actions</h2>
+            <button id="recruit">Recruit Troops (15 Turns)</button>
+            <button id="exploit">Exploit for Cash (25 Turns)</button>
+        </div>
+        
+        <div id="resources">
+            <h3>Your Resources</h3>
+            <p id="troops">Troops: 0</p>
+            <p id="cash">Cash: $0</p>
+        </div>
+
+        <div id="turn-timer">
+            <p>Turns regenerate every 10 minutes.</p>
+        </div>
+        
+        <footer>
+            <p>Combat Grounds - Game by [Your Name]</p>
+        </footer>
+    </main>
 
     <script src="game.js"></script>
 </body>
 </html>
 
+/* Basic Reset */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
 body {
     font-family: Arial, sans-serif;
-    background-color: #222;
+    background-color: #2e2e2e;
     color: #fff;
     text-align: center;
     padding: 20px;
 }
 
 header {
-    background-color: #333;
+    background-color: #444;
     padding: 20px;
     border-radius: 10px;
+    margin-bottom: 30px;
 }
 
-#combat-actions button {
+h1 {
+    font-size: 2.5em;
+    margin-bottom: 10px;
+}
+
+#battlefield button {
     margin: 10px;
     padding: 15px;
     font-size: 1.2em;
     cursor: pointer;
     border-radius: 5px;
     border: none;
+    background-color: #333;
+    color: white;
 }
 
-#combat-actions button:hover {
-    background-color: #444;
+#battlefield button:hover {
+    background-color: #555;
 }
 
-#combat-log {
-    margin-top: 20px;
-    height: 200px;
-    overflow-y: scroll;
-    border: 1px solid #444;
-    padding: 10px;
+#resources p, #turn-timer p {
+    font-size: 1.2em;
+    margin: 10px;
 }
 
-#enemy {
+#resources {
     margin-top: 30px;
 }
 
 footer {
-    margin-top: 30px;
+    margin-top: 50px;
+    font-size: 1em;
+    color: #bbb;
 }
 
-let playerHealth = 100;
-let playerLevel = 1;
-let enemyHealth = 100;
-let enemyLevel = 1;
+// Initial Game State
+let turns = 20; // Start with 20 turns
+let networth = 0;
+let troops = 0;
+let cash = 0;
+let premium = false; // Simulate premium subscription (40 turns every 10 minutes)
 
 // Elements
-const playerName = document.getElementById('player-name');
-const playerHealthElem = document.getElementById('player-health');
-const playerLevelElem = document.getElementById('player-level');
-const enemyHealthElem = document.getElementById('enemy-health');
-const enemyLevelElem = document.getElementById('enemy-level');
-const combatLog = document.getElementById('log-output');
+const turnsElem = document.getElementById('turns');
+const networthElem = document.getElementById('networth');
+const troopsElem = document.getElementById('troops');
+const cashElem = document.getElementById('cash');
+const recruitButton = document.getElementById('recruit');
+const exploitButton = document.getElementById('exploit');
 
-// Buttons
-const attackButton = document.getElementById('attack');
-const defendButton = document.getElementById('defend');
-const specialButton = document.getElementById('special');
-
-// Update stats display
-function updateStats() {
-    playerHealthElem.textContent = `Health: ${playerHealth}`;
-    playerLevelElem.textContent = `Level: ${playerLevel}`;
-    enemyHealthElem.textContent = `Health: ${enemyHealth}`;
-    enemyLevelElem.textContent = `Level: ${enemyLevel}`;
+// Turn Generation Timer (every 10 minutes)
+function regenerateTurns() {
+    setInterval(() => {
+        if (premium) {
+            turns = 40; // Premium gets 40 turns every 10 minutes
+        } else {
+            turns = 20; // Regular players get 20 turns
+        }
+        turnsElem.textContent = `Turns: ${turns}`;
+    }, 600000); // 600,000 ms = 10 minutes
 }
 
-// Log messages
-function logMessage(message) {
-    combatLog.textContent += `\n${message}`;
-    combatLog.scrollTop = combatLog.scrollHeight;
-}
-
-// Combat actions
-attackButton.addEventListener('click', () => {
-    let damage = Math.floor(Math.random() * 20) + 1;
-    enemyHealth -= damage;
-    logMessage(`You attacked the enemy for ${damage} damage!`);
-    checkCombatStatus();
-});
-
-defendButton.addEventListener('click', () => {
-    let defense = Math.floor(Math.random() * 10) + 1;
-    playerHealth += defense;
-    logMessage(`You defended and gained ${defense} health!`);
-    checkCombatStatus();
-});
-
-specialButton.addEventListener('click', () => {
-    let damage = Math.floor(Math.random() * 40) + 20;
-    enemyHealth -= damage;
-    logMessage(`You used a special attack! It dealt ${damage} damage!`);
-    checkCombatStatus();
-});
-
-// Check combat status
-function checkCombatStatus() {
-    if (enemyHealth <= 0) {
-        logMessage('You defeated the enemy!');
-        resetBattle();
-    } else {
-        enemyTurn();
-    }
-}
-
-// Enemy's turn
-function enemyTurn() {
-    let enemyAction = Math.floor(Math.random() * 3);
-    let damage;
-    
-    if (enemyAction === 0) {
-        damage = Math.floor(Math.random() * 20) + 1;
-        playerHealth -= damage;
-        logMessage(`The enemy attacked you for ${damage} damage!`);
-    } else if (enemyAction === 1) {
-        damage = Math.floor(Math.random() * 10) + 1;
-        enemyHealth += damage;
-        logMessage(`The enemy defended and gained ${damage} health!`);
-    } else {
-        damage = Math.floor(Math.random() * 40) + 20;
-        playerHealth -= damage;
-        logMessage(`The enemy used a special attack! You took ${damage} damage!`);
-    }
-    
-    if (playerHealth <= 0) {
-        logMessage('You were defeated by the enemy...');
-        resetBattle();
-    }
-    
-    updateStats();
-}
-
-// Reset battle
-function resetBattle() {
-    setTimeout(() => {
-        playerHealth = 100;
-        enemyHealth = 100;
-        logMessage('Battle has ended. Starting a new one...');
+// Actions - Recruiting Troops
+recruitButton.addEventListener('click', () => {
+    if (turns >= 15) {
+        turns -= 15;
+        troops += 5000; // Player gains 5000 troops
+        networth += 5000; // Increase networth by 5000 for recruiting
         updateStats();
-    }, 3000);
+    } else {
+        alert('Not enough turns to recruit troops!');
+    }
+});
+
+// Actions - Exploit for Cash
+exploitButton.addEventListener('click', () => {
+    if (turns >= 25) {
+        turns -= 25;
+        cash += 5000000000; // Player earns 5 billion cash
+        networth += 5000000000; // Increase networth by 5 billion for cash
+        updateStats();
+    } else {
+        alert('Not enough turns to exploit for cash!');
+    }
+});
+
+// Update Stats on screen
+function updateStats() {
+    turnsElem.textContent = `Turns: ${turns}`;
+    networthElem.textContent = `Networth: $${networth.toLocaleString()}`;
+    troopsElem.textContent = `Troops: ${troops}`;
+    cashElem.textContent = `Cash: $${cash.toLocaleString()}`;
 }
 
+// Start the game and turn timer
+regenerateTurns();
 updateStats();
+
