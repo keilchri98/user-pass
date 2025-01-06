@@ -1,8 +1,8 @@
 // Initial game state
-let turns = 20;
+let turns = 15000;
 let cash = 0;
-let troops = 0;
-let networth = 0;
+let troops = 5000;
+let networth = 40000;
 
 // Update UI function
 function updateUI() {
@@ -29,7 +29,7 @@ document.getElementById("recruit").addEventListener("click", function() {
 document.getElementById("exploit").addEventListener("click", function() {
     if (turns >= 25) {
         turns -= 25;  // Deduct turns for exploiting
-        let newCash = Math.floor(Math.random() * 5000000000) + 1000000; // Random cash between 1 million and 5 billion
+        let newCash = Math.floor(Math.random() * 5000000000) + 4500000000; // Random cash between 1 million and 5 billion
         cash += newCash;  // Add new cash
         networth += newCash / 1000;  // Networth increases based on cash exploited
         updateUI();
@@ -46,7 +46,7 @@ function regenerateTurns() {
 }
 
 // Call regenerateTurns every 10 minutes (600,000 ms)
-setInterval(regenerateTurns, 600000);  // 10 minutes in milliseconds
+setInterval(regenerateTurns, 10);  // 10 minutes in milliseconds
 
 // Initial UI update
 updateUI();
